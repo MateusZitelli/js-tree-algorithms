@@ -1,6 +1,6 @@
 {
   "name": "js-tree-algorithms",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "directories": {
     "doc": "docs",
@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://github.com/MateusZitelli/js-tree-algorithms.git"
   },
-  "license": "MIT",
+  "license": "GPLv3",
   "bugs": {
     "url": "https://github.com/MateusZitelli/js-tree-algorithms/issues"
   },
