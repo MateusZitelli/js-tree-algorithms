@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = {
-  LinkedList: require('./ll-simple'),
-  LinkedListArray: require('./ll-array'),
-  LinkedListXOR: require('./ll-xor'),
-  LinkedListDouble: require('./ll-double')
+  Simple: require('./ll-simple'),
+  ArrayBased: require('./ll-array'),
+  XOR: require('./ll-xor'),
+  Doubly: require('./ll-doubly')
 };
