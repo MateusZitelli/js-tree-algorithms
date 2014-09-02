@@ -16,10 +16,10 @@
  * @param {Node|null} The next node in the list
  * or null.
  */
-function Node (data, next, prev) {
+function Node (data) {
   this.data = data;
-  this.next = next || null;
-  this.prev = prev || null;
+  this.next = null;
+  this.prev = null;
 }
 
 /**

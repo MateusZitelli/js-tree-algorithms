@@ -6,7 +6,7 @@ var assert = require('assert')
   , Node = LL.Node;
 
 
-describe('LinkedList', function() {
+describe('LinkedListSimple', function() {
   it('should be defined', function() {
     assert(!!LinkedList);
   });
