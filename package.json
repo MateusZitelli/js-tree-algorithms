@@ -14,5 +14,8 @@
   "bugs": {
     "url": "https://github.com/MateusZitelli/js-tree-algorithms/issues"
   },
-  "homepage": "https://github.com/MateusZitelli/js-tree-algorithms"
+  "homepage": "https://github.com/MateusZitelli/js-tree-algorithms",
+  "devDependencies": {
+    "mocha": "^1.21.4"
+  }
 }
