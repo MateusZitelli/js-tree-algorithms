@@ -54,6 +54,26 @@ describe('LinkedListArrayBased', function() {
     });
   });
 
+  describe('.getIndex', function() {
+    it('should get the proper head index ', function() {
+      var node0 = new Node();
+
+      ll = new LinkedList(node0);
+
+      assert.equal(ll.getIndex(node0), ll.iHead);
+    });
+
+    it('should correctly get the index of the next node', function() {
+      var node0 = new Node();
+      var node1 = new Node();
+
+      ll = new LinkedList(node0);
+      ll.insertAfter(node0, node1);
+
+      assert.equal(ll.getIndex(node1), node0.next);
+    });
+  });
+
   describe('.insertAfter', function() {
     it('should insert after the first node', function() {
       var node0 = new Node();
@@ -106,6 +126,28 @@ describe('LinkedListArrayBased', function() {
 
       assert.deepEqual(ll.get(node2.prev), node0);
       assert.deepEqual(ll.get(node1.prev), node2);
+    });
+  });
+
+  describe('.remove', function() {
+    it('should remove the first element in a list, making it empty', function() {
+      var node0 = new Node();
+
+      ll = new LinkedList(node0);
+      ll.remove(node0);
+
+      assert(!~ll.iHead);
+    });
+
+    it('should remove the first element in a list, making it empty', function() {
+      var node0 = new Node();
+      var node1 = new Node();
+
+      ll = new LinkedList(node0);
+      ll.insertAfter(node0, node1);
+      ll.remove(node1);
+
+      assert(!~node0.next);
     });
   });
 });

@@ -1,3 +1,5 @@
+# LinkedLists
+
 Advantages:
 
 * Linked lists are a dynamic data structure, allocating the needed memory when the program is initiated.
@@ -18,3 +20,11 @@ Disadvantages:
 * Nodes are stored incontiguously, greatly increasing the time required to access individual elements within the list.
 
 * Difficulties arise in linked lists when it comes to reverse traversing. Singly linked lists are extremely difficult to navigate backwards, and while doubly linked lists are somewhat easier to read, memory is wasted in allocating space for a back pointer.
+
+## Simple
+
+## Doubly
+
+## ArrayBased
+
+## XOR

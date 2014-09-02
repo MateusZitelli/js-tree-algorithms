@@ -42,11 +42,8 @@ LinkedList.prototype.get = function (index) {
   return this.records.length >= index ? this.records[index] : null;
 };
 
-LinkedList.prototype.insertAfter = function (node, newNode) {
+LinkedList.prototype.getIndex = function (node) {
   var nodeIndex = -1;
-  var newIndex = -1;
-
-  newNode.next = node.next;
 
   if (!~node.next)
     if (!~node.prev)
@@ -56,7 +53,15 @@ LinkedList.prototype.insertAfter = function (node, newNode) {
   else
     nodeIndex = this.get(node.next).prev;
 
-  newNode.prev = nodeIndex;
+  return nodeIndex;
+}
+
+LinkedList.prototype.insertAfter = function (node, newNode) {
+  var nodeIndex = -1;
+  var newIndex = -1;
+
+  newNode.next = node.next;
+  newNode.prev = this.getIndex(node);
   newIndex = this.records.push(newNode) - 1;
 
   if (node.next > -1)
@@ -64,6 +69,17 @@ LinkedList.prototype.insertAfter = function (node, newNode) {
   node.next = newIndex;
 };
 
+LinkedList.prototype.remove = function (node) {
+  var i = this.getIndex(node);
+
+  if (i === this.iHead)
+    this.iHead = -1;
+
+  if (node.prev >= 0)
+    this.get(node.prev).next = -1;
+
+  this.records[i] = undefined;
+};
 
 module.exports = {
   LinkedList: LinkedList,
