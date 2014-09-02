@@ -1,5 +1,7 @@
+'use strict';
+
 var assert = require('assert')
-  , LL = require('../src/linked-lists/ll')
+  , LL = require('../../src/linked-lists/ll').LinkedList
   , LinkedList = LL.LinkedList
   , Node = LL.Node;
 
