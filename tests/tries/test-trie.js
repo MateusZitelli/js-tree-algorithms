@@ -40,6 +40,21 @@ describe('Trie', function() {
       var xTrie = eTrie.childs.x;
       assert.equal(xTrie.value, 'text');
     });
+
+    it('should insert words from a string', function() {
+      var trie = new Trie();
+      trie.insert('text test');
+      assert(trie.childs.t.childs.e.childs.x, undefined);
+      assert(trie.childs.t.childs.e.childs.s, undefined);
+    });
+
+    it('should insert words from a list of them', function() {
+      var trie = new Trie();
+      trie.insert(['text', 'test']);
+      assert(trie.childs.t.childs.e.childs.x, undefined);
+      assert(trie.childs.t.childs.e.childs.s, undefined);
+    });
+
   });
 
 });

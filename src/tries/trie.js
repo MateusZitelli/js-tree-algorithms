@@ -13,22 +13,25 @@ var Trie = function(){
 };
 
 Trie.prototype.insert = function(data){
-  var stringIndex, word, charIndex, wordLen, node;
+  var wordIndex, word, charIndex, wordLen, node;
 
   if(data === null){
     return;
-  }else if(typeof(data) === 'string'){
+  }else if(toString.call(data) === '[object String]'){
     //If is a string split is in single words
     data = data.split(' ');
-  }else if(typeof(data) !== 'object'){
+  }else if(toString.call(data) !== '[object Array]'){
     throw('The input must be null, a string or an array');
   }
 
-  for(stringIndex in data){
-    word = data[stringIndex];
+  for(wordIndex in data){
+    // For each word inserted 
+    word = data[wordIndex];
     node = this;
 
-    for(charIndex = 0, wordLen = word.length; charIndex < wordLen - 1; charIndex++){
+    for(charIndex = 0, wordLen = word.length; charIndex < wordLen - 1;
+        charIndex++){
+      // 
       var character = word.slice(charIndex, charIndex + 1);
       var remainingString = word.slice(charIndex + 1);
 
