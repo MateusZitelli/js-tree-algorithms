@@ -23,10 +23,10 @@ describe('Trie', function() {
   });
 
   describe('.insert', function () {
-    it('should insert a single caracter in a empty trie', function() {
+    it('should insert a single character in a empty trie', function() {
       var trie = new Trie();
       trie.insert('c');
-      assert.equal(trie.value, 'c');
+      assert.equal(trie.childs.c.value, 'c');
     });
     
     it('should insert a word in a empty trie', function() {
@@ -38,23 +38,56 @@ describe('Trie', function() {
       var eTrie = tTrie.childs.e;
       assert.notEqual(eTrie.childs.x, undefined);
       var xTrie = eTrie.childs.x;
-      assert.equal(xTrie.value, 'text');
+      assert.notEqual(xTrie.childs.t, undefined);
+      var secoundTTrie = xTrie.childs.t; 
+      assert.equal(secoundTTrie.value, 'text');
     });
 
     it('should insert words from a string', function() {
       var trie = new Trie();
       trie.insert('text test');
-      assert(trie.childs.t.childs.e.childs.x, undefined);
-      assert(trie.childs.t.childs.e.childs.s, undefined);
+      assert.notEqual(trie.childs.t.childs.e.childs.x, undefined);
+      assert.notEqual(trie.childs.t.childs.e.childs.s, undefined);
     });
 
     it('should insert words from a list of them', function() {
       var trie = new Trie();
       trie.insert(['text', 'test']);
-      assert(trie.childs.t.childs.e.childs.x, undefined);
-      assert(trie.childs.t.childs.e.childs.s, undefined);
+      assert.notEqual(trie.childs.t.childs.e.childs.x, undefined);
+      assert.notEqual(trie.childs.t.childs.e.childs.s, undefined);
     });
-
+  });
+  
+  describe('.search', function() {
+    it('should find a word', function(){
+      var trie = new Trie();
+      trie.insert('oi');
+      assert.equal(trie.search('oi').value, 'oi');
+    });
   });
 
+  describe('.delete', function () {
+    it('should empty a trie removing the single char in it', function(){
+      var trie = new Trie();
+      trie.insert('a');
+      trie.delete('a');
+      assert.equal(trie.childs.a, undefined);
+    });
+    
+    it('should not delete nodes that defines more than one word', function(){
+      var trie = new Trie();
+      trie.insert(['text', 'test']);
+      trie.delete('text');
+      assert.notEqual(trie.childs.t, undefined);
+      assert.notEqual(trie.childs.t.childs.e, undefined);
+      assert.equal(trie.childs.t.childs.e.childs.x, undefined);
+    });
+
+    it('should delete multiple words', function(){
+     var trie = new Trie();
+     trie.insert(['text', 'test']);
+     trie.delete(['text', 'test']);
+     assert.equal(trie.childs.t, undefined);
+    });
+  });
 });
