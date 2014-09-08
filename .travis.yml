@@ -2,3 +2,7 @@ language: node_js
 node_js:
 - "0.10"
 - "0.11"
+global:
+  - secure: "Fw8LJQIPVwbUgpIlrqmNt4lc0DmtwXfBaD+tIXgnX12QWqqoD+luV38e7dwxztG02dY5VCDvv1TUQuABOcwxXNZgkERxArS5wtTEXYB72trt9NIq5UVaZGfzrqqHCiHLOLdkbRmRAN9Q7e5AU1KeWP4AKAJVPLmNAN5ZrHR24nI="
+  - GH_REF: "github.com:MateusZitelli/js-tree-algorithms.git"
+script: npm run-script deploy
