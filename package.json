@@ -20,6 +20,7 @@
   "homepage": "https://github.com/MateusZitelli/js-tree-algorithms",
   "devDependencies": {
     "gulp": "^3.8.7",
+    "gulp-docco": "0.0.4",
     "gulp-mocha": "^1.0.0",
     "mocha": "^1.21.4"
   }
