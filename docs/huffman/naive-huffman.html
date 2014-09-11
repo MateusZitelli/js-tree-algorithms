@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>naive-huffman.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="../docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>naive-huffman.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-pi">'use strict'</span>;
+
+<span class="hljs-comment">/**
+ * The idea behind Huffman coding is that those
+ * letters that appear more should have fewer
+ * bits to represent them.
+ *
+ * In a naive approach we reduce the algorithm
+ * to:
+ *
+ * 1. count the frequency of each character in
+ * the sequence.
+ *
+ * 2. Sort it by the frequency of occurence.
+ *
+ * 3. recursively look for those two nodes with
+ * the lowest frequency. Merge them and then
+ * repeat this untill the tree is complete (we
+ * get into the root).
+ *
+ * 4. cmoplete the construction of the tree by
+ * assingnaling to the left of a node 0, to the
+ * right, 1 (recursively).
+ *
+ * 5. get the encoding of each leaf.
+ */</span>
+
+
+
+<span class="hljs-comment">/**
+ * Comparison function generator
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">compare</span> <span class="hljs-params">(field)</span> </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(a, b)</span> </span>{
+    <span class="hljs-keyword">if</span> (a[field] &lt; b[field])
+      <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (a[field] &gt; b[field])
+      <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">else</span>
+      <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+  };
+};
+
+
+<span class="hljs-comment">/**
+ * A node in the Huffman Tree
+ * @param {Array} pairs
+ * @param {number} freq
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Node</span> <span class="hljs-params">(pairs, freq)</span> </span>{
+  <span class="hljs-keyword">this</span>.pairs = pairs;
+  <span class="hljs-keyword">this</span>.freq = freq;
+}
+
+<span class="hljs-comment">/**
+ * Creates a new Node based on the node itself
+ * and another one.
+ * @param  {Node}
+ * @return {Node}
+ */</span>
+Node.prototype.merge = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(other)</span> </span>{
+  <span class="hljs-keyword">var</span> totalFrequency = <span class="hljs-keyword">this</span>.freq + other.freq;
+
+  <span class="hljs-keyword">this</span>.pairs.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(elem)</span> </span>{
+    elem[<span class="hljs-number">1</span>] = <span class="hljs-string">"1"</span> + elem[<span class="hljs-number">1</span>];
+  });
+
+  other.pairs.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(elem)</span> </span>{
+    elem[<span class="hljs-number">1</span>] = <span class="hljs-string">"0"</span> + elem[<span class="hljs-number">1</span>];
+  });
+
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Node(other.pairs.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(coll, elem)</span> </span>{
+    <span class="hljs-keyword">return</span> (coll.push(elem), coll);
+  }, <span class="hljs-keyword">this</span>.pairs), totalFrequency);
+};
+
+
+<span class="hljs-comment">/**
+ * Generates the huffman coding representation
+ * for a given string.
+ * @param  {string} str
+ */</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Huffman</span> <span class="hljs-params">(str)</span> </span>{
+  <span class="hljs-keyword">if</span> (!(<span class="hljs-keyword">this</span> <span class="hljs-keyword">instanceof</span> Huffman))
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Huffman(str);
+
+  <span class="hljs-keyword">this</span>.str = str;
+  <span class="hljs-keyword">this</span>._tree = {};
+}
+
+<span class="hljs-comment">/**
+ * Defines getter and setter for the internal
+ * 'tree'. Note that we add some validation to
+ * the 'setting' operation. This is for keeping
+ * a minimum consistency with what we are using
+ * in our toString. Maybe this is not very
+ * necessary (i - ciro - wanted to use this
+ * somewhere :D).
+ */</span>
+<span class="hljs-built_in">Object</span>.defineProperty(Huffman.prototype, <span class="hljs-string">"tree"</span>, {
+  get: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._tree.pairs.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(mem, curr)</span> </span>{
+      <span class="hljs-keyword">return</span> (mem[curr[<span class="hljs-number">0</span>]] = curr[<span class="hljs-number">1</span>], mem);
+    }, {});
+  },
+
+  set: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(tree)</span> </span>{
+    <span class="hljs-keyword">if</span> (!(tree.pairs &amp;&amp; tree.freq))
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Your tree must have \'pairs\' and \'freq\' property'</span>);
+
+    <span class="hljs-keyword">this</span>._tree = tree;
+  }
+});
+
+<span class="hljs-comment">/**
+ * Constructs a frequency table from a string
+ * @param  {string} str
+ */</span>
+Huffman.prototype._getFreqTable = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(str)</span> </span>{
+  <span class="hljs-keyword">return</span> str.split(<span class="hljs-string">''</span>).reduce(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(table, letter)</span> </span>{
+    <span class="hljs-keyword">if</span> (!table[letter])
+      table[letter] = <span class="hljs-number">0</span>;
+    table[letter]++;
+
+      <span class="hljs-keyword">return</span> table;
+    }, {});
+};
+
+<span class="hljs-comment">/**
+ * Process the string to generate the internal
+ * representation of it.
+ */</span>
+Huffman.prototype.process = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+  <span class="hljs-keyword">var</span> initial = [];
+  <span class="hljs-keyword">var</span> finalTable = [];
+  <span class="hljs-keyword">var</span> freqTable = <span class="hljs-keyword">this</span>._getFreqTable(<span class="hljs-keyword">this</span>.str);
+
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> key <span class="hljs-keyword">in</span> freqTable)
+    initial.push([key, freqTable[key]]);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>TODO(ciro) with a heapqueue we could get
+better</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  initial.sort(compare(<span class="hljs-string">'1'</span>));
+
+  initial.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(entry)</span> </span>{
+    finalTable.push(<span class="hljs-keyword">new</span> Node([[entry[<span class="hljs-number">0</span>], <span class="hljs-string">""</span>]], entry[<span class="hljs-number">1</span>]));
+  });
+
+  <span class="hljs-keyword">while</span> (finalTable.length &gt; <span class="hljs-number">1</span>) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>get the least frequent and then merge with
+the other least frequent.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> node = finalTable
+                  .shift()
+                  .merge(finalTable.shift());
+
+    finalTable.push(node);
+    finalTable.sort(compare(<span class="hljs-string">'freq'</span>));
+  }
+
+  <span class="hljs-keyword">if</span> (finalTable.length)
+    <span class="hljs-keyword">this</span>._tree = finalTable[<span class="hljs-number">0</span>];
+
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+};
+
+<span class="hljs-comment">/**
+ * Creates the string representation of the
+ * huffman tree.
+ * @return {string}
+ */</span>
+Huffman.prototype.toString = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+
+  <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.str || !<span class="hljs-built_in">Object</span>.keys(<span class="hljs-keyword">this</span>._tree))
+    <span class="hljs-keyword">return</span> <span class="hljs-string">''</span>;
+
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>._tree.pairs.reduce(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(mem, elem)</span> </span>{
+    <span class="hljs-keyword">return</span> (mem.push(elem[<span class="hljs-number">1</span>]), mem);
+  }, []).join(<span class="hljs-string">''</span>);
+};
+
+<span class="hljs-built_in">module</span>.exports = {
+  Node: Node,
+  Huffman: Huffman
+};</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
