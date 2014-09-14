@@ -9,7 +9,7 @@ describe('Trie', function() {
     assert(!!Trie);
   });
 
-  it('should be instantiable if nothing, a string or an array is passed',
+  it('should be instantiable',
      function(){
     assert.doesNotThrow(function () {
       new Trie();
