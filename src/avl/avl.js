@@ -24,55 +24,54 @@ var Avl = function(value, leftTree, rightTree){
 // *Applying the RR rotation to a tree reusing the nodes*
 // 
 // - We started with this tree:
+// ```
 //        A
 //      /   \
 //     B     C
 //          / \
 //         D   E
-// 
+// ```
 // - And want this one:
+// ```
 //        C
 //      /   \
 //     A     E
 //    / \
 //   B   D
-// 
+// ```
 // - First we swap the right and left sides of the tree, with this we can have 
 // the tree with the desired layout:
+// ```
 //        A
 //      /   \
 //     C     B
 //    / \
 //   D   E
-// 
-// - Now is just transpose the nodes values and positions:
-// 1.
-//        C           
-//      /   \
-//     A     B
-//    / \
-//   D   E
-// 
-// 2.
+// ```
+// - Save D in a separated variable and put B in its place.
+// ```
 //        C       D           
 //      /   \
 //     A     B
 //    / \
 //   B   E
-// 
-// 3.
+// ```
+// - Replace the old B for the E node.
+// ```
 //        C       D           
 //      /   \
 //     A     E
 //    / \
 //   B   E
-// 
-// 4.
+// ```
+// - And then the old E by the D.
+// ```
 //        C    
 //      /   \
 //     A     E
 //    / \
 //   B   D
+// ```
 
 /**
  * Apply RR rotation in the tree
@@ -81,17 +80,13 @@ Avl.prototype.rotateRR = function(){
   var ll;
   var oldLeft = this.left;
   var value = this.value;
-  // Step 1
   this.left = this.right;
   this.right = oldLeft;
-  // Step 2
   this.value = this.left.value;
   this.left.value = value;
   ll = this.left.left;
   this.left.left = this.right;
-  // Step 3
   this.right = this.left.right;
-  // Step 4
   this.left.right = ll;
 };
 
