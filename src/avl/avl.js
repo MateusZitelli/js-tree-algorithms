@@ -19,9 +19,23 @@ var Avl = function(value, leftTree, rightTree){
   this.value = value || null;
   this.left = leftTree || null;
   this.right = rightTree || null;
+  this.height = (!!this.left || !!this.right) ? undefined : 0;
+};
+
+Avl.prototype.getDepthFromChilds = function(){
+  var lHeight = !!this.left ? this.left.height : 0; 
+  var rHeight = !!this.right ? this.right.height : 0;  
+  if(lHeight === rHeight === 0){
+    return;
+  }
+  if(lHeight > rHeight){
+    this.height = lHeight + 1;
+  }else{
+    this.height = rHeight + 1;
+  }
 };
  
-// *Applying the RR rotation to a tree reusing the nodes*
+// *Applying the LL rotation to a tree reusing the nodes*
 // 
 // - We started with this tree:
 // ```
@@ -74,9 +88,9 @@ var Avl = function(value, leftTree, rightTree){
 // ```
 
 /**
- * Apply RR rotation in the tree
+ * Apply LL rotation in the tree
  */
-Avl.prototype.rotateRR = function(){
+Avl.prototype.rotateLL = function(){
   var ll;
   var oldLeft = this.left;
   var value = this.value;
@@ -90,11 +104,11 @@ Avl.prototype.rotateRR = function(){
   this.left.right = ll;
 };
 
-// Apply the same rules of RR rotation but inverted
+// Apply the same rules of LL rotation but inverted
 /**
- * Apply LL rotation in the tree
+ * Apply RR rotation in the tree
  */
-Avl.prototype.rotateLL = function(){
+Avl.prototype.rotateRR = function(){
   var rr;
   var oldRight = this.right;
   var value = this.value;
@@ -117,7 +131,7 @@ Avl.prototype.rotateLL = function(){
 Avl.prototype.insert = function(value){
   var node = this;
   var stack = [];
-  var insertInRight; // true for right insertio, false for left
+  var insertInRight, addedNode; // true for right insertio, false for left
   // Navigate the tree until find the right place to insert the number
   while(node && node.value){
     stack.push(node);
@@ -135,7 +149,7 @@ Avl.prototype.insert = function(value){
   // In case of a empty sub-tree the node is defined, so just define the value.
   if(node){
     node.value = value;
-    return;
+    return node;
   }
 
   // Pop the last lode from the stack
@@ -144,10 +158,38 @@ Avl.prototype.insert = function(value){
   // Insert in the defined position
   if(insertInRight){
     node.right = new Avl(value);
-    return node.right;
+    addedNode = node.right;
   }else{
     node.left = new Avl(value);
-    return node.left
+    addedNode = node.left;
+  }
+
+  while(node){
+    node.getDepthFromChilds();
+    node.balance();
+    node = stack.pop();
+  }
+
+  return addedNode;
+};
+
+Avl.prototype.balance = function(){
+  var lHeight = !!this.left ? this.left.height : -1;  
+  var rHeight = !!this.right ? this.right.height : -1;  
+  if(lHeight > rHeight + 1){
+    var llHeight = !!this.left.left ? this.left.left.height : -1;  
+    var lrHeight = !!this.left.right ? this.left.right.height : -1;  
+    if(lrHeight > llHeight){
+      this.left.rotateLL();
+    }
+    this.rotateRR();
+  }else if(rHeight > lHeight + 1){
+    var rlHeight = !!this.right.left ? this.right.left.height : -1;  
+    var rrHeight = !!this.right.right ? this.right.right.height : -1;  
+    if(rlHeight > rrHeight){
+      this.right.rotateRR();
+    }
+    this.rotateLL();
   }
 };
 

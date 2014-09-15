@@ -28,7 +28,7 @@ describe('Avl tree', function(){
     assert.equal(avl.value, 42);
   });
 
-  describe('.rotateRR', function(){
+  describe('.rotateLL', function(){
     it('sould rotate the tree properly', function(){
       var rr, rl;
       var avl = new Avl(42);
@@ -39,7 +39,7 @@ describe('Avl tree', function(){
       rr = r.insert(45);
 
       // Finaly rotate it;
-      avl.rotateRR();
+      avl.rotateLL();
       assert.equal(avl.value, 44);
       assert.equal(avl.left.value, 42);
       assert.equal(avl.left.left.value, 41);
@@ -48,7 +48,7 @@ describe('Avl tree', function(){
     });
   });
   
-  describe('.rotateLL', function(){
+  describe('.rotateRR', function(){
     it('sould rotate the tree properly', function(){
       var ll, lr;
       var avl = new Avl(42);
@@ -59,7 +59,7 @@ describe('Avl tree', function(){
       ll = l.insert(39);
 
       // Finaly rotate it;
-      avl.rotateLL();
+      avl.rotateRR();
       assert.equal(avl.value, 40);
       assert.equal(avl.right.value, 42);
       assert.equal(avl.right.right.value, 43);
@@ -87,6 +87,71 @@ describe('Avl tree', function(){
       avl.insert(41);
       assert.equal(avl.left.value, 41);
     });
+
+    it('should define the corret height to nodes', function(){
+      var avl = new Avl(42);
+      avl.insert(41);
+      assert.equal(avl.height, 1);
+    });
+    
+    describe('check balancement', function(){
+      it('should do nothing if the tree is balanced', function(){
+        var avl = new Avl(42);
+        avl.insert(41);
+        avl.insert(43);
+        avl.balance();
+        assert.equal(avl.value, 42);
+        assert.equal(avl.right.value, 43);
+        assert.equal(avl.left.value, 41);
+      });
+
+      it('should RR rotate when there is a straight queue w/ 3 nodes to the left',
+         function(){
+           var avl = new Avl(42);
+           // It will avoid the balancement by the insert function
+           avl.insert(41);
+           avl.insert(40);
+
+           assert.equal(avl.value, 41);
+           assert.equal(avl.left.value, 40);
+           assert.equal(avl.right.value, 42);
+      });
+
+      it('should LL rotate when there is a straight queue w/ 3 nodes to the right',
+         function(){
+           var avl = new Avl(42);
+           avl.insert(43);
+           avl.insert(44);
+
+           assert.equal(avl.value, 43);
+           assert.equal(avl.left.value, 42);
+           assert.equal(avl.right.value, 44);
+      });
+
+      it('should apply RL rotation in trees with RL layout',
+         function(){
+           var avl = new Avl(41);
+           avl.insert(43);
+           avl.insert(42);
+
+           assert.equal(avl.value, 42);
+           assert.equal(avl.left.value, 41);
+           assert.equal(avl.right.value, 43);
+      });
+      
+      it('should apply LR rotation in trees with LR layout',
+         function(){
+           var avl = new Avl(44);
+           avl.insert(42);
+           avl.insert(43);
+
+           assert.equal(avl.value, 43);
+           assert.equal(avl.left.value, 42);
+           assert.equal(avl.right.value, 44);
+      });
+    });
   });
+  
+
 
 });
