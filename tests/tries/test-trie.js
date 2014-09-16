@@ -42,8 +42,6 @@ describe('Trie', function() {
       var xTrie =        eTrie.children.x;
       var secoundTTrie = xTrie.children.t;
 
-      console.log(JSON.stringify(trie, undefined, 1));
-
       assert.notEqual(trie.children.t, undefined);
       assert.notEqual(tTrie.children.e, undefined);
       assert.notEqual(eTrie.children.x, undefined);
