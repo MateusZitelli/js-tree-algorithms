@@ -88,7 +88,8 @@ Trie.prototype.search = function(word){
  * @param  {string} data
  */
 Trie.prototype.delete = function(data){
-  var word, wordIndex, charIndex, node, childrentack, stackLen, charToRemove;
+  var word, wordIndex, charIndex, node, childrentack, stackLen, charToRemove,
+    charOnIndex;
 
   if(!data)
     return;
