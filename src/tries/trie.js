@@ -1,17 +1,25 @@
 /*
- * Trie is a ordered tree data struct used to store mainly strings. They
- * consists in a tree where each node can have a value and the links have a
- * single character. A trie is aways travesed from the root to the child nodes.
- * A node with a non-null value means that the word represented by the chars
- * from the root to this node contained in the trie, and the value of this node
- * is aways exactly the word mentioned.
+ * Trie is an ordered tree data structure used
+ * to store mainly strings. It consists in a
+ * tree where each node can have a value and its
+ * links a single character. A trie is aways
+ * travesed from the root to its children nodes.
+ * A node with a non-null value means that the
+ * word represented by the characters from the
+ * root to this node contained in the trie, and
+ * the value of this node is aways exactly the
+ * word mentioned.
 */
 
 var Trie = function(){
   this.value = null;
-  this.childs = {};
+  this.children = {};
 };
 
+/**
+ * Inserts a string into the trie structure.
+ * @param  {string} data
+ */
 Trie.prototype.insert = function(data){
   var wordIndex, word, charIndex, wordLen, node;
 
@@ -25,7 +33,7 @@ Trie.prototype.insert = function(data){
   }
 
   for(wordIndex in data){
-    // For each word inserted 
+    // For each word inserted
     word = data[wordIndex];
     node = this;
 
@@ -34,25 +42,31 @@ Trie.prototype.insert = function(data){
       var character = word.slice(charIndex, charIndex + 1);
       var remainingString = word.slice(charIndex + 1);
 
-      if(!node.childs[character]){
-        node.childs[character] = new Trie(remainingString);
+      if(!node.children[character]){
+        node.children[character] = new Trie(remainingString);
       }
-      node = node.childs[character]; 
+      node = node.children[character];
     }
 
     node.value = word;
   }
 };
 
-
+/**
+ * Searches for a given string in the trie.
+ * @param  {string} word
+ * @return {Node}      The final node that
+ * contains the string
+ */
 Trie.prototype.search = function(word){
   var node = this;
   var charIndex = 0;
   var charOnIndex;
-  while(node && charIndex < word.length){ 
+
+  while(node && charIndex < word.length){
     charOnIndex = word.slice(charIndex, charIndex+1);
     charIndex += 1;
-    node = node.childs[charOnIndex];
+    node = node.children[charOnIndex];
   }
 
   if(node && node.value === word){
@@ -63,8 +77,13 @@ Trie.prototype.search = function(word){
 };
 
 
+/**
+ * Deletes a string from the trie without
+ * deleting nodes that define other words
+ * @param  {string} data
+ */
 Trie.prototype.delete = function(data){
-  var word, wordIndex, charIndex, node, childStack, stackLen, index,
+  var word, wordIndex, charIndex, node, childrentack, stackLen, index,
     charToRemove;
   if(data === null){
     return;
@@ -77,27 +96,27 @@ Trie.prototype.delete = function(data){
   for(wordIndex in data){
     charIndex = 0;
     word = data[wordIndex];
-    childStack = [];
+    childrentack = [];
     node = this;
-    while(node && charIndex < word.length){ 
-      // Store the nodes and the childs that store the word
+    while(node && charIndex < word.length){
+      // Store the nodes and the children that store the word
       charOnIndex = word.slice(charIndex, charIndex + 1);
       charIndex += 1;
-      childStack.push({charToRemove: charOnIndex, node: node});
-      node = node.childs[charOnIndex];
+      childrentack.push({charToRemove: charOnIndex, node: node});
+      node = node.children[charOnIndex];
     }
 
     if(node && node.value === word){
       // If the word is defined in the trie, climb it removing the nodes
       // util find a node that is used by other word.
-      stackLen = childStack.length;
+      stackLen = childrentack.length;
       for(index = stackLen - 1; index >= 0; index--){
-        node = childStack[index].node;
-        charToRemove = childStack[index].charToRemove;
-        if(Object.keys(node.childs[charToRemove].childs).length >= 1){
+        node = childrentack[index].node;
+        charToRemove = childrentack[index].charToRemove;
+        if(Object.keys(node.children[charToRemove].children).length >= 1){
           break;
         }
-        delete node.childs[charToRemove];
+        delete node.children[charToRemove];
       }
     }
   }
