@@ -1,129 +1,198 @@
-var Node = function(value){
-  this.left = null;
-  this.right = null;
-  this.value = value;
-  this.height = 1;
+'use strict'
+// AVL trees are the first self-balancing binary search trees.
+//
+// An AVL tree is unbalanced when de difference between the height of the right
+// and left sub-tree of any node is bigger than two.
+//
+// The balancement is made based on sub-tree rotations. 
+
+
+/**
+ * Represents an AVL tree, sub-tree or node.
+ *
+ * @param {Integer} value
+ * @param {Avl} leftTree
+ * @param {Avl} rightTree
+ *
+ */
+var Avl = function(value, leftTree, rightTree){
+  this.value = value || null;
+  this.left = leftTree || null;
+  this.right = rightTree || null;
+  this.height = (!!this.left || !!this.right) ? undefined : 0;
 };
 
-Node.prototype.rotateRR = function(){
-  var oldValue = this.value;
+Avl.prototype.getDepthFromChilds = function(){
+  var lHeight = !!this.left ? this.left.height : 0; 
+  var rHeight = !!this.right ? this.right.height : 0;  
+  if(lHeight === rHeight === 0){
+    return;
+  }
+  if(lHeight > rHeight){
+    this.height = lHeight + 1;
+  }else{
+    this.height = rHeight + 1;
+  }
+};
+ 
+// *Applying the LL rotation to a tree reusing the nodes*
+// 
+// - We started with this tree:
+// ```
+//        A
+//      /   \
+//     B     C
+//          / \
+//         D   E
+// ```
+// - And want this one:
+// ```
+//        C
+//      /   \
+//     A     E
+//    / \
+//   B   D
+// ```
+// - First we swap the right and left sides of the tree, with this we can have 
+// the tree with the desired layout:
+// ```
+//        A
+//      /   \
+//     C     B
+//    / \
+//   D   E
+// ```
+// - Save D in a separated variable and put B in its place.
+// ```
+//        C       D           
+//      /   \
+//     A     B
+//    / \
+//   B   E
+// ```
+// - Replace the old B for the E node.
+// ```
+//        C       D           
+//      /   \
+//     A     E
+//    / \
+//   B   E
+// ```
+// - And then the old E by the D.
+// ```
+//        C    
+//      /   \
+//     A     E
+//    / \
+//   B   D
+// ```
+
+/**
+ * Apply LL rotation in the tree
+ */
+Avl.prototype.rotateLL = function(){
+  var ll;
   var oldLeft = this.left;
-  this.value = this.right.value;
+  var value = this.value;
   this.left = this.right;
-  this.right = this.right.right;
-  this.left = this.right.left;
-  this.left.value = oldValue;
-  this.left.left = oldLeft;
-  this.left.getHeightFromChildren();
-  this.getHeightFromChildren();
-  console.log('RR_BEFORE', this.height, oldLeft.height);
-  console.log('RR_AFTER', this.height, oldLeft.height);
+  this.right = oldLeft;
+  this.value = this.left.value;
+  this.left.value = value;
+  ll = this.left.left;
+  this.left.left = this.right;
+  this.right = this.left.right;
+  this.left.right = ll;
 };
 
-Node.prototype.rotateLL = function(){
+// Apply the same rules of LL rotation but inverted
+/**
+ * Apply RR rotation in the tree
+ */
+Avl.prototype.rotateRR = function(){
+  var rr;
   var oldRight = this.right;
-  var oldValue = this.value;
+  var value = this.value;
   this.right = this.left;
-  this.right.left = this.left.right;
-  this.right.right = oldRight;
-  this.left = this.left.left;
-  console.log('LL_BEFORE',this.height, oldRight.height);
-  console.log('LL_AFTER',this.height, oldRight.height);
+  this.left = oldRight;
+  this.value = this.right.value;
+  this.right.value = value;
+  rr = this.right.right;
+  this.right.right = this.left;
+  this.left = this.right.left;
+  this.right.left = rr;
 };
 
+/**
+ * Insert a new value in the tree and balance it.
+ *
+ * @param {Integer} value
+ * @return {Node} Return the created node or the node with the same value
+ */
+Avl.prototype.insert = function(value){
+  var node = this;
+  var stack = [];
+  var insertInRight, addedNode; // true for right insertio, false for left
+  // Navigate the tree until find the right place to insert the number
+  while(node && node.value){
+    stack.push(node);
+    if(value > node.value){
+      insertInRight = true;
+      node = node.right;
+    }else if(value < node.value){
+      insertInRight = false;
+      node = node.left;
+    }else{
+      return node;
+    }
+  } 
 
-Node.prototype.balance = function(){
-  var leftNodeHeight = this.left === null ? 0 : this.left.height;
-  var rightNodeHeight = this.right === null ? 0 : this.right.height;
-  if(leftNodeHeight > rightNodeHeight + 1){
-    var childLeftNodeHeight =
-      this.left.left === null ? 0 : this.left.left.height;
-    var childRightNodeHeight =
-      this.left.right === null ? 0 : this.left.right.height;
-    if(childRightNodeHeight > childLeftNodeHeight){
+  // In case of a empty sub-tree the node is defined, so just define the value.
+  if(node){
+    node.value = value;
+    return node;
+  }
+
+  // Pop the last lode from the stack
+  node = stack.pop();
+
+  // Insert in the defined position
+  if(insertInRight){
+    node.right = new Avl(value);
+    addedNode = node.right;
+  }else{
+    node.left = new Avl(value);
+    addedNode = node.left;
+  }
+
+  while(node){
+    node.getDepthFromChilds();
+    node.balance();
+    node = stack.pop();
+  }
+
+  return addedNode;
+};
+
+Avl.prototype.balance = function(){
+  var lHeight = !!this.left ? this.left.height : -1;  
+  var rHeight = !!this.right ? this.right.height : -1;  
+  if(lHeight > rHeight + 1){
+    var llHeight = !!this.left.left ? this.left.left.height : -1;  
+    var lrHeight = !!this.left.right ? this.left.right.height : -1;  
+    if(lrHeight > llHeight){
       this.left.rotateLL();
     }
     this.rotateRR();
-  }else if(rightNodeHeight > leftNodeHeight + 1){
-    var childLeftNodeHeight =
-      this.right.left === null ? 0 : this.right.left.height;
-    var childRightNodeHeight =
-      this.right.right === null ? 0 : this.right.right.height;
-    if(childRightNodeHeight < childLeftNodeHeight){
+  }else if(rHeight > lHeight + 1){
+    var rlHeight = !!this.right.left ? this.right.left.height : -1;  
+    var rrHeight = !!this.right.right ? this.right.right.height : -1;  
+    if(rlHeight > rrHeight){
       this.right.rotateRR();
     }
     this.rotateLL();
   }
 };
 
-Node.prototype.getHeightFromChildren = function(){
-  var rightHeight = this.right === null ? 0 : this.right.height;
-  var leftHeight = this.left === null ? 0 : this.left.height;
-  if(rightHeight >= leftHeight){
-    this.height = rightHeight + 1;
-  }else{
-    this.height = leftHeight + 1;
-  }
+module.exports = {
+  Avl: Avl
 };
-
-Node.prototype.insert = function(value){
-  var added = false;
- if(value < this.value){
-    if(this.left === null){
-      this.left = new Node(value);
-      added = true;
-    }else{
-      added = this.left.insert(value);
-      if(added){
-        this.balance();
-      }
-    }
-  }else if(value > this.value){
-    if(this.right === null){
-      this.right = new Node(value);
-      added = true;
-    }else{
-      added = this.right.insert(value);
-      if(added){
-        this.balance();
-      }
-    }
-  }
-
-  if(added){
-    this.getHeightFromChildren();
-  }
-
-  return added;
-};
-
-Node.prototype.print = function(){
-  if(this.right){
-    this.right.print();
-  }
-  if(this.left){
-    process.stdout.write('\n')
-    this.left.print();
-  }
-}
-
-var Tree = function(values){
-  this.root = new Node(values[0]);
-  for(var i = 1, len = values.length; i < len; i+=1){
-    this.insert(values[i]);
-  }
-};
-
-Tree.prototype.balanced = function(){
-  return this.setBalance() < 2;
-};
-
-Tree.prototype.insert = function(value){
-  this.root.insert(value);
-};
-
-Tree.prototype.print = function(){
-  this.root.print();
-}
-
-var t = new Tree([1,2,3,4,7,6,7,8,9,10]);
